@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package binaryconverter;
+
+// The service definition
+service BinaryConverter {
+  // Unary RPC
+  rpc ConvertToBinary (BinaryRequest) returns (BinaryResponse);
+}
+
+// The request message
+message BinaryRequest {
+  int32 number = 1;
+}
+
+// The response message
+message BinaryResponse {
+  string binary = 1;
+}

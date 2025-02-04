@@ -1,53 +1,49 @@
-from concurrent import futures
 import grpc
 import time
-import logging
+import random
+from concurrent import futures
 import converter_pb2
 import converter_pb2_grpc
-
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+from registry import Registry  # Importing Registry
 
 class ConverterServicer(converter_pb2_grpc.ConverterServicer):
-    # Server streaming RPC: stream each binary digit.
     def ConvertServerStream(self, request, context):
-        logging.info(f"Received Server Stream request: {request.number}")
-        binary = bin(request.number)[2:]  # remove the '0b' prefix
-        for digit in binary:
-            logging.info(f"Streaming binary digit: {digit}")
+        binary_representation = bin(request.number)[2:]
+        for digit in binary_representation:
             yield converter_pb2.BinaryResponse(binary=digit)
-            time.sleep(0.5)  # simulate a delay for streaming
+            time.sleep(0.2)  # Simulate delay
 
-    # Client streaming RPC: accumulate requests and return a single response.
     def ConvertClientStream(self, request_iterator, context):
-        binaries = []
-        for req in request_iterator:
-            logging.info(f"Received Client Stream request: {req.number}")
-            binaries.append(bin(req.number)[2:])
-        result = ','.join(binaries)
-        logging.info(f"Returning combined binary response: {result}")
-        return converter_pb2.BinaryResponse(binary=result)
+        binary_results = []
+        for request in request_iterator:
+            binary_results.append(bin(request.number)[2:])
+        return converter_pb2.BinaryResponse(binary=" ".join(binary_results))
 
-    # Bidirectional streaming RPC: for each request, respond immediately.
     def ConvertBidirectional(self, request_iterator, context):
-        for req in request_iterator:
-            logging.info(f"Received Bidirectional request: {req.number}")
-            binary = bin(req.number)[2:]
-            logging.info(f"Sending binary response: {binary}")
-            yield converter_pb2.BinaryResponse(binary=binary)
+        for request in request_iterator:
+            yield converter_pb2.BinaryResponse(binary=bin(request.number)[2:])
 
-def serve():
+def serve(port):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     converter_pb2_grpc.add_ConverterServicer_to_server(ConverterServicer(), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port(f'[::]:{port}')
     server.start()
-    logging.info("Server started on port 50051")
+
+    # Register the server in the registry
+    registry = Registry()
+    registry.register(port)
+
+    print(f"Server started on port {port}")
+    
     try:
         while True:
             time.sleep(86400)
     except KeyboardInterrupt:
-        logging.info("Shutting down server...")
+        print(f"Shutting down server on port {port}")
+        registry.deregister(port)
         server.stop(0)
 
 if __name__ == '__main__':
-    serve()
+    import sys
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 50051
+    serve(port)

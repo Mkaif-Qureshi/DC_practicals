@@ -12,43 +12,20 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
     oneofs: true
 });
 
-const converter_proto = grpc.loadPackageDefinition(packageDefinition).converter;
-const client = new converter_proto.Converter('localhost:50051', grpc.credentials.createInsecure());
-
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-// **Function to Display Menu in Loop**
-function showMenu() {
-    rl.question(
-        '\nSelect RPC type:\n1. Server Streaming\n2. Client Streaming\n3. Bidirectional Streaming\nQ. Quit\nEnter choice: ',
-        (choice) => {
-            switch (choice.toLowerCase()) {
-                case '1':
-                    serverStreamingCall();
-                    break;
-                case '2':
-                    clientStreamingCall();
-                    break;
-                case '3':
-                    bidirectionalStreamingCall();
-                    break;
-                case 'q':
-                    console.log('Exiting...');
-                    rl.close();
-                    process.exit(0);
-                    break;
-                default:
-                    console.log('Invalid choice! Try again.');
-                    showMenu();
-            }
-        }
-    );
-}
+const converter_proto = grpc.loadPackageDefinition(packageDefinition).converter;
 
-// **Server Streaming Call**
+// Create a client using round-robin load balancing
+const client = new converter_proto.Converter(
+    'localhost:50051,localhost:50052,localhost:50053',
+    grpc.credentials.createInsecure(),
+    { 'grpc.lb_policy_name': 'round_robin' }
+);
+
 function serverStreamingCall() {
     rl.question('Enter a decimal number for server streaming: ', (input) => {
         const number = parseInt(input);
@@ -67,17 +44,16 @@ function serverStreamingCall() {
             showMenu();
         });
         call.on('error', (e) => {
-            console.error(e);
+            console.error('Error in server streaming:', e);
             showMenu();
         });
     });
 }
 
-// **Client Streaming Call**
 function clientStreamingCall() {
     const call = client.ConvertClientStream((error, response) => {
         if (error) {
-            console.error(error);
+            console.error('Error in client streaming:', error);
         } else {
             console.log('Client streaming response:', response.binary);
         }
@@ -101,7 +77,6 @@ function clientStreamingCall() {
     });
 }
 
-// **Bidirectional Streaming Call**
 function bidirectionalStreamingCall() {
     const call = client.ConvertBidirectional();
     console.log('Enter decimal numbers for bidirectional streaming (type "done" to stop):');
@@ -129,6 +104,33 @@ function bidirectionalStreamingCall() {
             }
         }
     });
+}
+
+function showMenu() {
+    rl.question(
+        '\nSelect RPC type:\n1. Server Streaming\n2. Client Streaming\n3. Bidirectional Streaming\nQ. Quit\nEnter choice: ',
+        (choice) => {
+            switch (choice.toLowerCase()) {
+                case '1':
+                    serverStreamingCall();
+                    break;
+                case '2':
+                    clientStreamingCall();
+                    break;
+                case '3':
+                    bidirectionalStreamingCall();
+                    break;
+                case 'q':
+                    console.log('Exiting...');
+                    rl.close();
+                    process.exit(0);
+                    break;
+                default:
+                    console.log('Invalid choice! Try again.');
+                    showMenu();
+            }
+        }
+    );
 }
 
 // Start the loop

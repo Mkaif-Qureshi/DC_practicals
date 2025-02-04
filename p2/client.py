@@ -1,71 +1,85 @@
 import grpc
+import random
+import time
 import converter_pb2
 import converter_pb2_grpc
+from registry import Registry
 
-def server_streaming_call(stub):
-    number = input("Enter a decimal number for server streaming: ")
-    if not number.isdigit():
-        print("Invalid number! Please enter a valid decimal.")
-        return
-    request = converter_pb2.DecimalRequest(number=int(number))
-    print("Server streaming response:")
-    for response in stub.ConvertServerStream(request):
-        print("Received binary digit:", response.binary)
+def get_available_server():
+    registry = Registry()
+    servers = registry.get_servers()
+    if not servers:
+        raise Exception("No available servers found.")
+    return random.choice(servers)  # Load balancing: pick a random server
 
-def client_streaming_call(stub):
-    print('Enter decimal numbers one by one (type "done" to send):')
-    numbers = []
+def server_streaming(stub, port):
+    number = int(input("Enter decimal number for server streaming: "))
+    print(f"Connecting to server on port {port}...")
+    response_stream = stub.ConvertServerStream(converter_pb2.DecimalRequest(number=number))
+    print("Binary Representation (streamed):", end=" ")
+    for response in response_stream:
+        print(response.binary, end=" ", flush=True)
+        time.sleep(0.5)  # Simulate streaming delay
+    print("\n")
+
+def client_streaming(stub, port):
+    print(f"Connecting to server on port {port}...")
+    print("Enter decimal numbers (type 'q' to stop):")
+    requests = []
     while True:
-        number = input()
-        if number.lower() == 'done':
+        user_input = input("Enter number: ")
+        if user_input.lower() == 'q':
             break
-        if number.isdigit():
-            numbers.append(converter_pb2.DecimalRequest(number=int(number)))
-        else:
-            print("Invalid number! Enter a valid decimal or type 'done'.")
+        try:
+            requests.append(converter_pb2.DecimalRequest(number=int(user_input)))
+        except ValueError:
+            print("Invalid input, enter a valid number.")
+    
+    response = stub.ConvertClientStream(iter(requests))
+    print(f"Client Streaming Response from server {port}: {response.binary}")
 
-    response = stub.ConvertClientStream(iter(numbers))
-    print("Client streaming response:", response.binary)
-
-def bidirectional_streaming_call(stub):
+def bidirectional_streaming(stub, port):
     def request_generator():
-        print('Enter decimal numbers for bidirectional streaming (type "done" to stop):')
+        print(f"Connecting to server on port {port}...")
+        print("Enter decimal numbers (type 'q' to stop):")
         while True:
-            number = input()
-            if number.lower() == 'done':
-                break
-            if number.isdigit():
-                yield converter_pb2.DecimalRequest(number=int(number))
-            else:
-                print("Invalid number! Enter a valid decimal or type 'done'.")
+            user_input = input("Enter number: ")
+            if user_input.lower() == 'q':
+                return
+            try:
+                yield converter_pb2.DecimalRequest(number=int(user_input))
+            except ValueError:
+                print("Invalid input, enter a valid number.")
+    
+    response_stream = stub.ConvertBidirectional(request_generator())
+    print(f"Bidirectional Stream Responses from server {port}:")
+    for response in response_stream:
+        print(response.binary)
 
-    responses = stub.ConvertBidirectional(request_generator())
-    for response in responses:
-        print("Received binary:", response.binary)
-
-def main():
-    channel = grpc.insecure_channel('localhost:50051')
+def run():
+    port = get_available_server()
+    channel = grpc.insecure_channel(f'localhost:{port}')
     stub = converter_pb2_grpc.ConverterStub(channel)
-
+    
     while True:
-        print("\nSelect RPC type:")
-        print("1. Server Streaming")
-        print("2. Client Streaming")
+        print("\nSelect an option:")
+        print("1. Client Streaming")
+        print("2. Server Streaming")
         print("3. Bidirectional Streaming")
-        print("Q. Quit")
-        choice = input("Enter choice: ").strip().lower()
-
+        print("q. Quit")
+        choice = input("Enter choice: ").strip()
+        
         if choice == '1':
-            server_streaming_call(stub)
+            client_streaming(stub, port)
         elif choice == '2':
-            client_streaming_call(stub)
+            server_streaming(stub, port)
         elif choice == '3':
-            bidirectional_streaming_call(stub)
-        elif choice == 'q':
-            print("Exiting...")
+            bidirectional_streaming(stub, port)
+        elif choice.lower() == 'q':
+            print("Exiting client.")
             break
         else:
-            print("Invalid choice! Try again.")
+            print("Invalid choice. Please enter 1, 2, 3, or 'q'.")
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    run()

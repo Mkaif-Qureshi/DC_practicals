@@ -26,7 +26,8 @@ if _version_not_supported:
 
 
 class ConverterStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """The Converter service offers three kinds of RPC streaming methods.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -34,42 +35,43 @@ class ConverterStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ConvertServerStream = channel.unary_stream(
-                '/converter.Converter/ConvertServerStream',
+        self.ServerStreamingConvert = channel.unary_stream(
+                '/converter.Converter/ServerStreamingConvert',
                 request_serializer=converter__pb2.DecimalRequest.SerializeToString,
                 response_deserializer=converter__pb2.BinaryResponse.FromString,
                 _registered_method=True)
-        self.ConvertClientStream = channel.stream_unary(
-                '/converter.Converter/ConvertClientStream',
+        self.ClientStreamingConvert = channel.stream_unary(
+                '/converter.Converter/ClientStreamingConvert',
                 request_serializer=converter__pb2.DecimalRequest.SerializeToString,
                 response_deserializer=converter__pb2.BinaryResponse.FromString,
                 _registered_method=True)
-        self.ConvertBidirectional = channel.stream_stream(
-                '/converter.Converter/ConvertBidirectional',
+        self.BidirectionalStreamingConvert = channel.stream_stream(
+                '/converter.Converter/BidirectionalStreamingConvert',
                 request_serializer=converter__pb2.DecimalRequest.SerializeToString,
                 response_deserializer=converter__pb2.BinaryResponse.FromString,
                 _registered_method=True)
 
 
 class ConverterServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """The Converter service offers three kinds of RPC streaming methods.
+    """
 
-    def ConvertServerStream(self, request, context):
-        """Server streaming: client sends a single decimal; server streams back binary digits.
+    def ServerStreamingConvert(self, request, context):
+        """1. Server Streaming: Client sends one DecimalRequest and gets a stream of BinaryResponse.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ConvertClientStream(self, request_iterator, context):
-        """Client streaming: client sends a stream of decimals; server replies with a single response.
+    def ClientStreamingConvert(self, request_iterator, context):
+        """2. Client Streaming: Client sends a stream of DecimalRequest and gets one BinaryResponse.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ConvertBidirectional(self, request_iterator, context):
-        """Bidirectional streaming: both sides exchange streams.
+    def BidirectionalStreamingConvert(self, request_iterator, context):
+        """3. Bidirectional Streaming: Both sides send streams.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -78,18 +80,18 @@ class ConverterServicer(object):
 
 def add_ConverterServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ConvertServerStream': grpc.unary_stream_rpc_method_handler(
-                    servicer.ConvertServerStream,
+            'ServerStreamingConvert': grpc.unary_stream_rpc_method_handler(
+                    servicer.ServerStreamingConvert,
                     request_deserializer=converter__pb2.DecimalRequest.FromString,
                     response_serializer=converter__pb2.BinaryResponse.SerializeToString,
             ),
-            'ConvertClientStream': grpc.stream_unary_rpc_method_handler(
-                    servicer.ConvertClientStream,
+            'ClientStreamingConvert': grpc.stream_unary_rpc_method_handler(
+                    servicer.ClientStreamingConvert,
                     request_deserializer=converter__pb2.DecimalRequest.FromString,
                     response_serializer=converter__pb2.BinaryResponse.SerializeToString,
             ),
-            'ConvertBidirectional': grpc.stream_stream_rpc_method_handler(
-                    servicer.ConvertBidirectional,
+            'BidirectionalStreamingConvert': grpc.stream_stream_rpc_method_handler(
+                    servicer.BidirectionalStreamingConvert,
                     request_deserializer=converter__pb2.DecimalRequest.FromString,
                     response_serializer=converter__pb2.BinaryResponse.SerializeToString,
             ),
@@ -102,10 +104,11 @@ def add_ConverterServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Converter(object):
-    """Missing associated documentation comment in .proto file."""
+    """The Converter service offers three kinds of RPC streaming methods.
+    """
 
     @staticmethod
-    def ConvertServerStream(request,
+    def ServerStreamingConvert(request,
             target,
             options=(),
             channel_credentials=None,
@@ -118,7 +121,7 @@ class Converter(object):
         return grpc.experimental.unary_stream(
             request,
             target,
-            '/converter.Converter/ConvertServerStream',
+            '/converter.Converter/ServerStreamingConvert',
             converter__pb2.DecimalRequest.SerializeToString,
             converter__pb2.BinaryResponse.FromString,
             options,
@@ -132,7 +135,7 @@ class Converter(object):
             _registered_method=True)
 
     @staticmethod
-    def ConvertClientStream(request_iterator,
+    def ClientStreamingConvert(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -145,7 +148,7 @@ class Converter(object):
         return grpc.experimental.stream_unary(
             request_iterator,
             target,
-            '/converter.Converter/ConvertClientStream',
+            '/converter.Converter/ClientStreamingConvert',
             converter__pb2.DecimalRequest.SerializeToString,
             converter__pb2.BinaryResponse.FromString,
             options,
@@ -159,7 +162,7 @@ class Converter(object):
             _registered_method=True)
 
     @staticmethod
-    def ConvertBidirectional(request_iterator,
+    def BidirectionalStreamingConvert(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -172,7 +175,7 @@ class Converter(object):
         return grpc.experimental.stream_stream(
             request_iterator,
             target,
-            '/converter.Converter/ConvertBidirectional',
+            '/converter.Converter/BidirectionalStreamingConvert',
             converter__pb2.DecimalRequest.SerializeToString,
             converter__pb2.BinaryResponse.FromString,
             options,

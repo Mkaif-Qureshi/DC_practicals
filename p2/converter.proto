@@ -2,21 +2,26 @@ syntax = "proto3";
 
 package converter;
 
+// The Converter service offers three kinds of RPC streaming methods.
 service Converter {
-  // Server streaming: client sends a single decimal; server streams back binary digits.
-  rpc ConvertServerStream(DecimalRequest) returns (stream BinaryResponse) {}
+  // 1. Server Streaming: Client sends one DecimalRequest and gets a stream of BinaryResponse.
+  rpc ServerStreamingConvert(DecimalRequest) returns (stream BinaryResponse) {}
 
-  // Client streaming: client sends a stream of decimals; server replies with a single response.
-  rpc ConvertClientStream(stream DecimalRequest) returns (BinaryResponse) {}
+  // 2. Client Streaming: Client sends a stream of DecimalRequest and gets one BinaryResponse.
+  rpc ClientStreamingConvert(stream DecimalRequest) returns (BinaryResponse) {}
 
-  // Bidirectional streaming: both sides exchange streams.
-  rpc ConvertBidirectional(stream DecimalRequest) returns (stream BinaryResponse) {}
+  // 3. Bidirectional Streaming: Both sides send streams.
+  rpc BidirectionalStreamingConvert(stream DecimalRequest) returns (stream BinaryResponse) {}
 }
 
+// The request message containing the decimal number.
 message DecimalRequest {
   int32 number = 1;
 }
 
+// The response message containing the binary string and an identifier
+// of the server that produced it.
 message BinaryResponse {
   string binary = 1;
+  string server_id = 2;
 }

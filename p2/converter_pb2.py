@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0f\x63onverter.proto\x12\tconverter\" \n\x0e\x44\x65\x63imalRequest\x12\x0e\n\x06number\x18\x01 \x01(\x05\" \n\x0e\x42inaryResponse\x12\x0e\n\x06\x62inary\x18\x01 \x01(\t2\x81\x02\n\tConverter\x12O\n\x13\x43onvertServerStream\x12\x19.converter.DecimalRequest\x1a\x19.converter.BinaryResponse\"\x00\x30\x01\x12O\n\x13\x43onvertClientStream\x12\x19.converter.DecimalRequest\x1a\x19.converter.BinaryResponse\"\x00(\x01\x12R\n\x14\x43onvertBidirectional\x12\x19.converter.DecimalRequest\x1a\x19.converter.BinaryResponse\"\x00(\x01\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0f\x63onverter.proto\x12\tconverter\" \n\x0e\x44\x65\x63imalRequest\x12\x0e\n\x06number\x18\x01 \x01(\x05\"3\n\x0e\x42inaryResponse\x12\x0e\n\x06\x62inary\x18\x01 \x01(\t\x12\x11\n\tserver_id\x18\x02 \x01(\t2\x90\x02\n\tConverter\x12R\n\x16ServerStreamingConvert\x12\x19.converter.DecimalRequest\x1a\x19.converter.BinaryResponse\"\x00\x30\x01\x12R\n\x16\x43lientStreamingConvert\x12\x19.converter.DecimalRequest\x1a\x19.converter.BinaryResponse\"\x00(\x01\x12[\n\x1d\x42idirectionalStreamingConvert\x12\x19.converter.DecimalRequest\x1a\x19.converter.BinaryResponse\"\x00(\x01\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,7 +34,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_DECIMALREQUEST']._serialized_start=30
   _globals['_DECIMALREQUEST']._serialized_end=62
   _globals['_BINARYRESPONSE']._serialized_start=64
-  _globals['_BINARYRESPONSE']._serialized_end=96
-  _globals['_CONVERTER']._serialized_start=99
-  _globals['_CONVERTER']._serialized_end=356
+  _globals['_BINARYRESPONSE']._serialized_end=115
+  _globals['_CONVERTER']._serialized_start=118
+  _globals['_CONVERTER']._serialized_end=390
 # @@protoc_insertion_point(module_scope)

@@ -1,0 +1,7 @@
+RMI File Transfer System User Manual
+-------------------------------------
+1. Build the project using the build.cmd script in the scripts folder.
+2. Start the server by running startServer.cmd from the server directory.
+3. Launch the client by running startClient.cmd from the client directory.
+4. Follow on-screen instructions for file uploads and downloads.
+5. For additional details, review design.txt and requirements.txt.

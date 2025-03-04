@@ -1,0 +1,9 @@
+RMI File Transfer System Requirements
+---------------------------------------
+1. Support upload and download operations for both small and large files.
+2. Maintain session state for resuming interrupted transfers.
+3. Use Java RMI for synchronous Request/Reply communication.
+4. Operate with a single, centralized server instance.
+5. Implement access control and session tracking.
+6. Provide CMD-based scripts for building, deploying, and running the project.
+7. Future enhancements include caching and load balancing.

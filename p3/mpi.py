@@ -14,7 +14,7 @@ if __name__ == "__main__":
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    numbers = [10**x for x in range(1020, 1025)]  # Large numbers like 10^20, 10^21, ..., 10^24
+    numbers = [10**x for x in range(2020, 2025)]  # Large numbers like 10^20, 10^21, ..., 10^24
     chunk_size = len(numbers) // size  # Divide work among processes
 
     # Scatter work to all processes

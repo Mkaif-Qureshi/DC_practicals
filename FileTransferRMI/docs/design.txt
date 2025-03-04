@@ -1,0 +1,12 @@
+RMI File Transfer System Design
+-------------------------------
+A. Client/Server Design: Stateful communication with session management.
+B. Server Creation Semantic: Singleton server instance to handle requests.
+C. Persistent and Transient Communication: Persistent for large files (chunked) and transient for small files.
+D. Synchronous Request/Reply: Client sends a request and waits for a reply.
+E. Call Semantics: Each remote method is executed at most once.
+F. Single Centralized Server: Designed for one server instance (future scope for load balancing).
+G. Multi-threading: Server supports concurrent client requests.
+H. Per-Call Workload: Considerations for caching to reduce repetitive work.
+I. Reply Caching: Planned caching for idempotent procedures.
+J. Timeout Values: Managed through configuration with potential for adaptive timeouts.

@@ -9,7 +9,7 @@ def decimal_to_binary(n):
     return binary_str
 
 if __name__ == "__main__":
-    numbers = [10**x for x in range(1020, 1025)]  # Large numbers like 10^20, 10^21, ..., 10^24
+    numbers = [10**x for x in range(2020, 2025)]  # Large numbers like 10^20, 10^21, ..., 10^24
     start_time = time.time()
 
     results = [decimal_to_binary(num) for num in numbers]

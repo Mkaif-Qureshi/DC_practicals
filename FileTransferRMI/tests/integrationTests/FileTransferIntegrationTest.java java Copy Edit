@@ -1,0 +1,12 @@
+package tests.integrationTests;
+
+import client.src.FileTransferClient;
+
+public class FileTransferIntegrationTest {
+    public static void main(String[] args) {
+        System.out.println("Running File Transfer Integration Test...");
+        // Ensure the server is running before executing this test.
+        FileTransferClient client = new FileTransferClient();
+        client.run();  // Use the interactive client for integration testing.
+    }
+}
